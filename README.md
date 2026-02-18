@@ -14,6 +14,7 @@ if not os.path.exists("results"):
     os.makedirs("results")
 
 
+# 1. Preprocessing
 datagen = ImageDataGenerator(
     rescale=1./255,
     validation_split=0.2
@@ -35,6 +36,7 @@ val_data = datagen.flow_from_directory(
     subset='validation'
 )
 
+# 2. CNN Model Design
 model = Sequential([
     Conv2D(32, (3,3), activation='relu', input_shape=(128,128,3)),
     MaxPooling2D(pool_size=(2,2)),
@@ -48,22 +50,26 @@ model = Sequential([
     Dense(train_data.num_classes, activation='softmax')
 ])
 
+# 3. Compile Model
 model.compile(
     optimizer='adam',
     loss='categorical_crossentropy',
     metrics=['accuracy']
 )
 
+# 4. Train Model
 history = model.fit(
     train_data,
     validation_data=val_data,
     epochs=10
 )
 
+# 5. Evaluate Model
 loss, acc = model.evaluate(val_data)
 print(f"Validation Accuracy: {acc*100:.2f}%")
 
 
+# 7. Confusion Matrix + Classification Report
 y_pred = model.predict(val_data)
 y_pred_classes = np.argmax(y_pred, axis=1)
 y_true = val_data.classes
@@ -92,8 +98,16 @@ with open("results/metrics.txt", "w") as f:
     f.write("\n\nClassification Report:\n")
     f.write(report)
 
-
+# 8. Save Model
 model.save("results/vegetable_classifier.keras") 
+
+
+
+
+
+
+
+
 
 
 
